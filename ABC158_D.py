@@ -8,10 +8,11 @@ def ChangeState(Is_normal):
         return True
 
 
-
 S=input()
 Q=int(input())
 Is_normal=True
+
+h=''
 
 for _ in range(Q):
     q = input()
@@ -20,15 +21,20 @@ for _ in range(Q):
     else:
         if q[2]=='1':
             if Is_normal==True:
-                S=q[4]+S
+                h=h+q[4]
             else :
                 S=S+q[4]
         else :
             if Is_normal==True:
                 S=S+q[4]
             else:
-                S=q[4]+S
+                h=h+q[4]
     # print(Is_normal, S)
+
+h=h[::-1]
+S=h+S
+
 if Is_normal==False:
     S=S[::-1]
+
 print(S)
