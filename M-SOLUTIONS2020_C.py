@@ -1,16 +1,17 @@
 N,K=map(int,input().split())
 A=list(map(int,input().split()))
 
-S=[1]
+dictS={}
+dictS[0]=1
 
-for n in range (N):
+for n in range (1,N):
     if n<K:
-        S.append(A[n]*S[-1])
+        dictS[n]=A[n]*dictS[n-1]
     else:
-        S.append(A[n]*S[-1]/A[n-K])
+        dictS[n]=A[n]*dictS[n-1]/A[n-K]
 
-for i in range (K+1,N+1):
-    if S[i]>S[i-1]:
-        print('Yes')
-    else:
-        print('No')
+    if n>=K:
+        if dictS[n]>dictS[n-1]:
+            print('Yes')
+        else:
+            print('No')
