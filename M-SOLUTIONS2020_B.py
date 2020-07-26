@@ -1,21 +1,18 @@
 R,G,B=map(int,input().split())
 K=int(input())
 
+M=0
 
-for _ in range (K) :
-    if R < G :
-        pass
-    else:
+while R>=G or G>=B:
+    if R>=G:
         G*=2
-        continue
-
-    if G < B :
-        pass
-    else:
-        B*=2
-        continue
+        M+=1
     
-if R < G < B :
+    if G>=B:
+        B*=2
+        M+=1
+
+if M<=K:
     print('Yes')
-else :
+else:
     print('No')
