@@ -1,19 +1,26 @@
 # DISCO presents ディスカバリーチャンネル コードコンテスト2020 予選
 # B - Iron Bar Cutting
 
-import bisect
-
 N=int(input())
 A=list(map(int,input().split()))
 
-l=sum(A)//2
-m=sum(A)%2
-
-aA=[0]
+aA_n=[0]
 for i in range (N):
-    aA.append(A[i]+aA[-1])
+    aA_n.append(A[i]+aA_n[-1])
+aA_n=aA_n[1:]
 
-t=bisect.bisect_left(aA,l)
 
+rA=A[::-1]
+aA_r=[0]
+for i in range (N):
+        aA_r.append(rA[i]+aA_r[-1])
+aA_r=aA_r[1:]
+aA_r=aA_r[::-1]
 
-print(abs(aA[t]-l)+m)
+ans=aA_n[-1]
+for i in range (N-1):
+    _tempans=abs(aA_n[i]-aA_r[i+1])
+    if _tempans<ans:
+        ans=_tempans
+
+print(ans)
