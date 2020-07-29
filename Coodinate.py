@@ -21,7 +21,18 @@ class Coodinate (object):
         self.x=x
         self.y=y
         self.z=z
-    
+
+
+    def __str__(self):
+        if self.z==0:
+            if self.y==0:
+                return "( {} )".format(self.x)
+            else :
+                return "( {} , {} )".format(self.x,self.y)
+        else:
+            return "( {} , {} , {} )".format(self.x,self.y,self.z)    
+
+
     def distance(self,other):
         """Calculate the straight-line distance between 2 points in Euclidean space.
 
