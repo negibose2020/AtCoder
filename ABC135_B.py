@@ -1,29 +1,26 @@
 # AtCoder Beginner Contest 135
 # B - 0 or 1 Swap
 
-N=int(input())
-p=list(map(int,input().split()))
+'''
+解説見て書き直し、
+数列の要素と順番(i+1)が一致していない個数を数える。
+これが3以上であれば"NO"
+3未満(0か2)であれば"YES"
+'''
 
-S={}
-s=N+1
 
-for i in range (N):
-    if p[i]==i+1:
-        pass
+N = int(input())
+p = list(map(int,input().split()))
+
+count = 0
+
+for i in range (N) :
+    if p[i] != i+1 :
+        count += 1
     else :
-        S[i+1]=p[i]
-        s=i+1
+        pass
 
-
-if len (S)==0:
+if count < 3 :
     print('YES')
-    exit()
-elif len(S)>2:
+else :
     print('NO')
-
-else:
-    n=S[s]
-    if S[n]==s:
-        print('YES')
-    else:
-        print('NO')
