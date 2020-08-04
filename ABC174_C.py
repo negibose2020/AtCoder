@@ -11,7 +11,7 @@ if K==7 or K==1:
 else:
     pass
 
-for i in range (1,K+2):
+for i in range (1,K):
     a=(modsevens[-1] *10+7)%K
     
     if a==0:
