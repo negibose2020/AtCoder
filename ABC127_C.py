@@ -1,17 +1,16 @@
 # AtCoder Beginner Contest 127
 # C - Prison
-
 import numpy as np
+
 
 N,M= map(int,input().split())
 
-# cards=[0]*N+1
-
-G=[0]*(N+1)
+cards=[i for i in range (1,N+1)]
+C=np.array(cards)
 
 for i in range (M):
-    l,r=map(int,input().split())
-    for j in range(l,r+1):
-        G[j]+=1
+    r,l = map(int,input().split())
+    C=np.where(C<r,0,C)
+    C=np.where(C>l,0,C)
 
-print(G.count(M))
+print(np.count_nonzero(C))
