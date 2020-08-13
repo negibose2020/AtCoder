@@ -1,25 +1,21 @@
 # AtCoder Beginner Contest 127
 # C - Prison
 
+import numpy as np
+
 N,M= map(int,input().split())
 
-Gates=[]
+# cards=[0]*N+1
+
+G=[0]*(N+1)
+Garr=np.array(G)
+
 for i in range (M):
     l,r=map(int,input().split())
-    Gates.append([l,r])
+    g=[1 if ( l<=i and i<=r ) else 0 for i in range (N+1)]
+    garr=np.array(g)
+    Garr+=garr
 
-ans =0
+ans=np.count_nonzero(Garr==M)
 
-for i in range (1,N+1):
-    for j in range (M):
-        # print(i,Gates[j])
-        # print(Gates[j][0]<=i and i<=Gates[j][1]) 
-        if Gates[j][0]<=i and i<=Gates[j][1]:
-            pass
-        else:
-            break
-    else:
-        ans+=1
-    # print(ans)
-
-print(ans)
+print (ans)
