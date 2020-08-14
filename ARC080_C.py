@@ -41,17 +41,9 @@ if N%2==1:  # N>3 ,Nが奇数の時
         exit()
 
 else:   # N>3 ,Nが偶数の時
-    if other%2==1:  #かつ、要素が偶数である数が奇数の時  
-        if (N-((other//2)*2))//2 <= mod40:
-            print("Yes")
-            exit()
-        else:
-            print("No")
-            exit()
+    if (N-((other//2)*2))//2 <= mod40:
+        print("Yes")
+        exit()
     else:
-        if (N-((other//2)*2))//2 <= mod40:
-            print("Yes")
-            exit()
-        else:
-            print("No")
-            exit()
+        print("No")
+        exit()
