@@ -23,6 +23,7 @@ if N==1:
     else:
         print("No")
         exit()
+
 if N==2 or N==3:
     if mod40>0 or other==N:
         print("Yes")
@@ -30,17 +31,8 @@ if N==2 or N==3:
     else:
         print("No")
         exit()
-# ↑ここまではあってそう。
 
-if N%2==1:  # N>3 ,Nが奇数の時
-    if (N-((other//2)*2))//2 <= mod40:
-        print("Yes")
-        exit()
-    else:
-        print("No")
-        exit()
-
-else:   # N>3 ,Nが偶数の時
+else:
     if (N-((other//2)*2))//2 <= mod40:
         print("Yes")
         exit()
