@@ -2,14 +2,20 @@
 # A - Rainy Season
 
 S=input()
-if S=="RRR":
-    print(3)
-    exit()
-if S=="SRR" or S=="RRS":
-    print(2)
-    exit()
-if S=="SSS":
-    print(0)
-    exit()
-else:
-    print(1)
+
+ans=0
+
+for i in range (len(S)):
+    if S[i]=="R":
+        tempans=1
+        for j in range (i+1,len(S)):
+            if S[i]==S[j]:
+                tempans+=1
+            else:
+                if tempans>ans:
+                    ans=tempans
+                break
+        else:
+            if tempans>ans:
+                ans=tempans
+print(ans)
