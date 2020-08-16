@@ -1,18 +1,23 @@
 # AtCoder Beginner Contest 175
 # B - Making Triangle
 
+import bisect
+
 N=int(input())
 L=list(map(int,input().split()))
+
+L.sort()
 
 ans=0
 
 for i in range (N):
     for j in range (i+1,N):
-        for k in range (j+1,N):
-            a=min(L[i],L[j],L[k])
-            c=max(L[i],L[j],L[k])
-            b=(L[i]+L[j]+L[k]-a-c)
-            if a+b>c and a<b<c:
-                ans+=1
+        if L[i]==L[j]:
+            pass
+        else:
+            ab=L[i]+L[j]
+            c=bisect.bisect_left(L,ab)
+            bequalc=bisect.bisect_right(L,L[j])
+            ans+=c-(bequalc)
 
 print(ans)
