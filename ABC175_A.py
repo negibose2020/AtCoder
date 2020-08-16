@@ -4,18 +4,25 @@
 S=input()
 
 ans=0
+count=0
 
-for i in range (len(S)):
+if S[0]=="R":
+    count=1
+
+for i in range (1,len(S)):
     if S[i]=="R":
-        tempans=1
-        for j in range (i+1,len(S)):
-            if S[i]==S[j]:
-                tempans+=1
-            else:
-                if tempans>ans:
-                    ans=tempans
-                break
+        if count>0:
+            pass
         else:
-            if tempans>ans:
-                ans=tempans
+            count=1
+        if S[i-1]=="R":
+            count+=1
+        else:
+            if count>ans:
+                ans=count
+                count=0
+else:
+    if count>ans:
+        ans=count
+
 print(ans)
