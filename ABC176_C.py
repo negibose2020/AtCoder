@@ -1,6 +1,3 @@
-### This code is TLEcode ###
-
-
 # AtCoder Beginner Contest 176
 # C - Step
 
@@ -10,8 +7,10 @@ Als=list(map(int,input().split()))
 ans=0
 
 for i in range (1,N):
-    if Als[i]>=max(Als[0:i]):
+    if Als[i]>=Als[i-1]:
         pass
     else :
-        ans+= max(Als[0:i])-Als[i]
+        step=abs(Als[i]-Als[i-1])
+        ans+=step
+        Als[i]+=step
 print(ans)
