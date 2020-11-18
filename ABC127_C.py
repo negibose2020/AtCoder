@@ -5,12 +5,21 @@ import numpy as np
 
 N,M= map(int,input().split())
 
-cards=[i for i in range (1,N+1)]
-C=np.array(cards)
+cardnums=[i for i in range (1,N+1)]
+canthrough=[0]*N
+C=np.array([cardnums,canthrough])
+
+print(C)
 
 for i in range (M):
     r,l = map(int,input().split())
-    C=np.where(C<r,0,C)
-    C=np.where(C>l,0,C)
+    C=np.delete(C,np.where(C<r)[0],axis=1)
+    C=np.delete(C,np.where(C>l)[0],axis=1)
+    
 
-print(np.count_nonzero(C))
+print(C)
+
+#     C=np.where(C<r,0,C)
+#     C=np.where(C>l,0,C)
+
+# print(np.count_nonzero(C))
