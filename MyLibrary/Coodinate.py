@@ -109,12 +109,21 @@ class Coodinate (object):
         y_intercept=self.y-s*self.x
         return y_intercept
 
-
+    def x_interceptGivenTwoPoints(self,other):
+        if self.z!=0 or other.z!=0:
+            return False
+        s=Coodinate.lineSlopeGivenTwoPoints(self,other)
+        y_intercept=self.y-s*self.x
+        x_intercept=-1*y_intercept/s
+        return x_intercept
 
 
 # a=Coodinate(1,6)
 # b=Coodinate(3,2)
 # m=Coodinate.lineSlopeGivenTwoPoints(a,b)
 # yint=Coodinate.y_interceptGivenTwoPoints(a,b)
+# xint=Coodinate.x_interceptGivenTwoPoints(a,b)
+
 # print(m)
 # print(yint)
+# print(xint)
