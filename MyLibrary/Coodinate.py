@@ -93,3 +93,19 @@ class Coodinate (object):
         y_diff_abs=abs(self.y - other.y)
         z_diff_abs=abs(self.z - other.z)
         return(x_diff_abs + y_diff_abs + z_diff_abs)
+
+    def lineSlopesGivenTwoPoints(self,other):
+        if self.z!=0 or other.z!=0:
+            return False
+        deltax=self.x - other.x
+        deltay=self.y - other.y
+        slopes=deltay/deltax
+        return slopes
+
+
+
+# a=Coodinate(1,6)
+# b=Coodinate(3,2)
+# # print(a)
+# m=Coodinate.lineSlopesGivenTwoPoints(a,b)
+# print(m)
