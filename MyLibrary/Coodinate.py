@@ -102,11 +102,19 @@ class Coodinate (object):
         slope=deltay/deltax
         return slope
 
-    
+    def y_interceptGivenTwoPoints(self,other):
+        if self.z!=0 or other.z!=0:
+            return False
+        s=Coodinate.lineSlopeGivenTwoPoints(self,other)
+        y_intercept=self.y-s*self.x
+        return y_intercept
+
+
 
 
 # a=Coodinate(1,6)
 # b=Coodinate(3,2)
-# # print(a)
-# m=Coodinate.lineSlopesGivenTwoPoints(a,b)
+# m=Coodinate.lineSlopeGivenTwoPoints(a,b)
+# yint=Coodinate.y_interceptGivenTwoPoints(a,b)
 # print(m)
+# print(yint)
