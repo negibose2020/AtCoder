@@ -97,8 +97,14 @@ class Coodinate (object):
     def lineSlopeGivenTwoPoints(self,other):
         if self.z!=0 or other.z!=0:
             return False
+        if self==other:
+            return False
         deltax=self.x - other.x
         deltay=self.y - other.y
+        if deltax==0:
+            return "x={}".format(self.x)
+        if deltay==0:
+            return "y={}".format(self.y)
         slope=deltay/deltax
         return slope
 
@@ -106,24 +112,39 @@ class Coodinate (object):
         if self.z!=0 or other.z!=0:
             return False
         s=Coodinate.lineSlopeGivenTwoPoints(self,other)
-        y_intercept=self.y-s*self.x
-        return y_intercept
+        if type(s)!=str:
+            y_intercept=self.y-s*self.x
+            return y_intercept
+        elif s[0]=="y":
+            return int(s[2:])
+        else:
+            return None
 
     def x_interceptGivenTwoPoints(self,other):
         if self.z!=0 or other.z!=0:
             return False
         s=Coodinate.lineSlopeGivenTwoPoints(self,other)
-        y_intercept=self.y-s*self.x
-        x_intercept=-1*y_intercept/s
-        return x_intercept
+        if type(s)!=str:
+            y_intercept=self.y-s*self.x
+            x_intercept=-1*y_intercept/s
+            return x_intercept
+        elif s[0]=="x":
+            return int(s[2:])
+        else:
+            return None
 
-
-# a=Coodinate(1,6)
-# b=Coodinate(3,2)
-# m=Coodinate.lineSlopeGivenTwoPoints(a,b)
-# yint=Coodinate.y_interceptGivenTwoPoints(a,b)
-# xint=Coodinate.x_interceptGivenTwoPoints(a,b)
-
-# print(m)
-# print(yint)
-# print(xint)
+a=Coodinate(1,1)
+b=Coodinate(1,2)
+c=Coodinate(1,3)
+m1=Coodinate.lineSlopeGivenTwoPoints(a,b)
+m2=Coodinate.lineSlopeGivenTwoPoints(b,c)
+y1=Coodinate.y_interceptGivenTwoPoints(a,b)
+y2=Coodinate.y_interceptGivenTwoPoints(b,c)
+x1=Coodinate.x_interceptGivenTwoPoints(a,b)
+x2=Coodinate.x_interceptGivenTwoPoints(b,c)
+# print(m1)
+# print(m2)
+# print(m1==m2)
+# print(x1)
+# print(x2)
+# print(x1==x2)
