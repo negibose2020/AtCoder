@@ -5,9 +5,9 @@ class Coodinate (object):
     
     params
     ------------------------------
-    x : int or floot ,default 0
-    y : int or floot ,default 0
-    z : int or floot ,default 0
+    x : int or float ,default 0
+    y : int or float ,default 0
+    z : int or float ,default 0
 
 
     This class have following methods.
@@ -15,6 +15,9 @@ class Coodinate (object):
     distance : Calculate the straight-line distance between 2 points in Euclidean space.
     midpoint : Calculate the midpoint(halfway) between 2 points.
     manhattan_distance : Calculate the distance between 2 points that is sum of the absolute values their Cartesian coordinates.
+    lineSlope : Calculate the slope of a line passing through two points at 2-dimension.
+    y_intercept : Calculate the y-intercept of a line passing through two points at 2-dimension.
+    x_intercept : Calculate the x-intercept of a line passing through two points at 2-dimension.
     """
 
     def __init__(self,x=0,y=0,z=0):
@@ -43,7 +46,7 @@ class Coodinate (object):
 
         return
         ----------
-        distance : floot
+        distance : float
 
         """
         x_diff_sq=(self.x-other.x)**2
@@ -85,7 +88,7 @@ class Coodinate (object):
 
         return
         ----------
-        manhattan_distance : floot
+        manhattan_distance : float
 
         """
 
@@ -94,10 +97,24 @@ class Coodinate (object):
         z_diff_abs=abs(self.z - other.z)
         return(x_diff_abs + y_diff_abs + z_diff_abs)
 
-    def lineSlopeGivenTwoPoints(self,other):
+    def lineSlope(self,other):
+        """Calculate the slope of a line passing through two points at 2-dimension.
+
+        params
+        ----------
+        self : Coodinate object
+        other : Coodinate object
+
+        return
+        ----------
+        lineSlope : float
+        if lineSlope is zero(Straight Across), equation >> y=number : str
+        if lineSlope is undefined(Straight Up and Down), equation >> x=number : str
+        """
+
         if self.z!=0 or other.z!=0:
             return False
-        if self==other:
+        if (self.x , self.y)==(other.x , other.y):
             return False
         deltax=self.x - other.x
         deltay=self.y - other.y
@@ -108,28 +125,54 @@ class Coodinate (object):
         slope=deltay/deltax
         return slope
 
-    def y_interceptGivenTwoPoints(self,other):
+    def y_intercept(self,other):
+        """Calculate the y-intercept of a line passing through two points at 2-dimension.
+
+        params
+        ----------
+        self : Coodinate object
+        other : Coodinate object
+
+        return
+        ----------
+        y_intercept : float
+        if lineSlope is undefined(Straight Up and Down), None : None
+        """
+
         if self.z!=0 or other.z!=0:
             return False
-        s=Coodinate.lineSlopeGivenTwoPoints(self,other)
+        s=Coodinate.lineSlope(self,other)
         if type(s)!=str:
             y_intercept=self.y-s*self.x
             return y_intercept
         elif s[0]=="y":
-            return int(s[2:])
+            return float(s[2:])
         else:
             return None
 
-    def x_interceptGivenTwoPoints(self,other):
+    def x_intercept(self,other):
+        """Calculate the x-intercept of a line passing through two points at 2-dimension.
+
+        params
+        ----------
+        self : Coodinate object
+        other : Coodinate object
+
+        return
+        ----------
+        x_intercept : float
+        if lineSlope is zero(Straight Across), None : None
+        """
+
         if self.z!=0 or other.z!=0:
             return False
-        s=Coodinate.lineSlopeGivenTwoPoints(self,other)
+        s=Coodinate.lineSlope(self,other)
         if type(s)!=str:
             y_intercept=self.y-s*self.x
             x_intercept=-1*y_intercept/s
             return x_intercept
         elif s[0]=="x":
-            return int(s[2:])
+            return float(s[2:])
         else:
             return None
 
@@ -147,8 +190,8 @@ for i in range (len(combiList)):
     a=Coodinate(combiList[i][0][0],combiList[i][0][1])
     b=Coodinate(combiList[i][1][0],combiList[i][1][1])
     c=Coodinate(combiList[i][2][0],combiList[i][2][1])
-    m1=Coodinate.lineSlopeGivenTwoPoints(a,b)
-    m2=Coodinate.lineSlopeGivenTwoPoints(b,c)
+    m1=Coodinate.lineSlope(a,b)
+    m2=Coodinate.lineSlope(b,c)
     if m1==m2:
         print("Yes")
         exit()
