@@ -1,0 +1,26 @@
+# version: '3'
+
+# services:
+#     web:
+#         build: .
+#         ports:
+#             - '8002:8000'
+#         volumes:
+#             - '.:/Udemy-Django'
+        # tty: true
+#         stdin_open: true
+
+
+version: '3'
+services:
+  dev: # 任意の名前（ディレクトリ名 + dev がコンテナ名となります）
+    build: .
+    #   context: .
+    #   dockerfile: Dockerfile
+    # image: ANATA_NO_IMAGE_NAME
+    ports:
+    - "8888:8888"
+    volumes:
+    - .:/workdir
+    tty: true
+    stdin_open: true
