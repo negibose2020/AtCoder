@@ -1,8 +1,7 @@
 # AtCoder Beginner Contest 185
 # A - ABC Preparation
 
-A1,A2,A3,A4=map(int,input().split())
+ls=list(map(int,input().split()))
+ls.sort()
 
-ans=min(A1,A2,A3,A4)
-
-print(ans)
+print(ls[0])
