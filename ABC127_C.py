@@ -1,25 +1,23 @@
 # AtCoder Beginner Contest 127
 # C - Prison
-import numpy as np
-
-
 N,M= map(int,input().split())
 
-cardnums=[i for i in range (1,N+1)]
-canthrough=[0]*N
-C=np.array([cardnums,canthrough])
-
-print(C)
+ls=[0]*(10**5+100)
 
 for i in range (M):
     r,l = map(int,input().split())
-    C=np.delete(C,np.where(C<r)[0],axis=1)
-    C=np.delete(C,np.where(C>l)[0],axis=1)
+    ls[r+1]+=1
+    ls[l+2]-=1
     
+ls2=[0]
+for i in range(10**5+100):
+    a=ls2[-1]+ls[i]
+    ls2.append(a)
 
-print(C)
-
-#     C=np.where(C<r,0,C)
-#     C=np.where(C>l,0,C)
-
-# print(np.count_nonzero(C))
+# print(ls2)
+ans=0
+for j in range(10**5+101):
+    if ls2[j]==M:
+        ans+=1
+    
+print(ans)
