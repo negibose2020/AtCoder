@@ -1,21 +1,21 @@
-# パナソニックプログラミングコンテスト（AtCoder Beginner Contest 186）
+# パナソニックプログラミングコンテスト
+# AtCoder Beginner Contest 186
 # B - Blocks on Grid
 
 H,W=map(int,input().split())
 
-mini=999999999999999
+minValue=150
 
-E=[]
+AREA=[]
 for i in range (H):
     w=list(map(int,input().split()))
-    _mini=min(w)
-    mini=min(mini,_mini)
-    E.append(w)
-# print(E)
-# print(H,W)
+    minOfThisW=min(w)
+    minValue=min(minValue,minOfThisW)
+    AREA.append(w)
+
 ans=0
 for i in range (H):
     for j in range (W):
-        ans+=E[i][j]-mini
+        ans+=AREA[i][j]-minValue
 
 print(ans)
