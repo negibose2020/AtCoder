@@ -4,4 +4,6 @@
 
 N,W=map(int,input().split())
 
-print(N//W)
+d,m=divmod(N,W)
+
+print(d)
