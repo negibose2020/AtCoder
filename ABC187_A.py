@@ -3,10 +3,10 @@
 
 N,M=map(str,input().split())
 
-n=int(N[0])+int(N[1])+int(N[2])
-m=int(M[0])+int(M[1])+int(M[2])
+n,m=0,0
 
-if n>=m:
-    print(n)
-else:
-    print(m)
+for i in range (3):
+    n+=int(N[i])
+    m+=int(M[i])
+
+print(max(n,m))
