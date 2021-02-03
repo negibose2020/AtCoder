@@ -3,13 +3,7 @@
 
 A,B,C=map(int,input().split())
 
-if C==0:
-    if A>B:
-        print("Takahashi")
-    else:
-        print("Aoki")
+if A+C>B:
+    print("Takahashi")
 else:
-    if A+1>B:
-        print("Takahashi")
-    else:
-        print("Aoki")
+    print("Aoki")
