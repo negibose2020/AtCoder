@@ -9,7 +9,7 @@ if C==0:
     else:
         print("Aoki")
 else:
-    if B>A:
-        print("Aoki")
-    else:
+    if A+1>B:
         print("Takahashi")
+    else:
+        print("Aoki")
