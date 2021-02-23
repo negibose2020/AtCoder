@@ -1,30 +1,44 @@
 # SOMPO HD プログラミングコンテスト2021(AtCoder Beginner Contest 192)
 # D - Base n
 
+def is_ok(num):
+    a=henkan(Xlist,num,M)
+    if a<=M:
+        return True
+    else:
+        return False
+
+def megru_bisect(ok,ng):
+    while(abs(ok-ng)>1):
+        mid=(ok+ng)//2
+        if is_ok(mid):
+            ok=mid
+        else:
+            ng=mid
+    return ok
+
+
 def henkan(list,base,M):
     l=len(list)
     ans=0
     for i in range(l):
         ans+=list[i]*(base**(l-1-i))
-        if ans>M:
-            return False
-    if ans in ansset:
-        return False
-    else:
-        ansset.add(ans)
-    return True
+    return ans
 
 X=input()
 M=int(input())
 Xlist=list(map(int,X))
 d=max(Xlist)
 
-ansset=set()
+if len(X)==1:
+    if henkan(Xlist, d+1,M)<=M:
+        print(1)
+        exit()
+    else:
+        print(0)
+        exit()
 
-ans=0
-i=d+1
 
-while henkan(Xlist,i,M)==True:
-    ans+=1
-    i+=1
-print(ans)
+ans=megru_bisect(d,10**18+2)
+
+print(ans-d)
