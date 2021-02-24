@@ -12,9 +12,7 @@ def func(strNum):
 
 N,K=map(int,input().split())
 
-n=N
-
 for _ in range (K):
-    n=func(str(n))
+    N=func(str(N))
 
-print(n)
+print(N)
