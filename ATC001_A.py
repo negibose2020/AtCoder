@@ -1,5 +1,35 @@
 # A - 深さ優先探索
-from collections import deque
+import sys
+# import pprint
+sys.setrecursionlimit(10000000)
+
+def dfs(v):
+    seen[v[0]][v[1]]=88
+    # pprint.pprint(seen)
+    if v==g:
+        print('Yes')
+        exit()
+    if v[0]-1>=0 and area[v[0]-1][v[1]]!="#" and seen[v[0]-1][v[1]]==-1:
+        u=[v[0]-1,v[1]]
+        dfs(u)
+        # seen[v[0]-1][v[1]]=True # seen[v[0]][v[1]]+1
+        # todo.append([v[0]-1,v[1]])
+    if v[0]+1<H and area[v[0]+1][v[1]]!="#" and seen[v[0]+1][v[1]]==-1:
+        u=[v[0]+1,v[1]]
+        dfs(u)
+        # seen[v[0]+1][v[1]]=True # seen[v[0]][v[1]]+1
+        # todo.append([v[0]+1,v[1]])
+    if v[1]-1>=0 and area[v[0]][v[1]-1]!="#" and seen[v[0]][v[1]-1]==-1:
+        u=[v[0],v[1]-1]
+        dfs(u)
+        # seen[v[0]][v[1]-1]=True # seen[v[0]][v[1]]+1
+        # todo.append([v[0],v[1]-1])
+    if v[1]+1<W and area[v[0]][v[1]+1]!="#" and seen[v[0]][v[1]+1]==-1:
+        u=[v[0],v[1]+1]
+        dfs(u)
+        # seen[v[0]][v[1]+1]=True # seen[v[0]][v[1]]+1
+        # todo.append([v[0],v[1]+1])
+
 
 H,W=map(int,input().split())
 area=[]
@@ -14,35 +44,10 @@ for i in range (H):
 seen=[]
 for _ in range (H):
     seen.append([-1]*W)
-todo=deque()
-seen[s[0]][s[1]]=0
-todo.append(s)
 
-while len(todo)>0:
-    v=todo.pop()
-    if v==g:
-        print('Yes')
-        exit()
-    # print(v)
-    if v[0]-1>=0 and area[v[0]-1][v[1]]!="#" and seen[v[0]-1][v[1]]==-1:
-        seen[v[0]-1][v[1]]=seen[v[0]][v[1]]+1
-        todo.append([v[0]-1,v[1]])
-    if v[0]+1<H and area[v[0]+1][v[1]]!="#" and seen[v[0]+1][v[1]]==-1:
-        seen[v[0]+1][v[1]]=seen[v[0]][v[1]]+1
-        todo.append([v[0]+1,v[1]])
-    if v[1]-1>=0 and area[v[0]][v[1]-1]!="#" and seen[v[0]][v[1]-1]==-1:
-        seen[v[0]][v[1]-1]=seen[v[0]][v[1]]+1
-        todo.append([v[0],v[1]-1])
-    if v[1]+1<W and area[v[0]][v[1]+1]!="#" and seen[v[0]][v[1]+1]==-1:
-        seen[v[0]][v[1]+1]=seen[v[0]][v[1]]+1
-        todo.append([v[0],v[1]+1])
-    # print(todo)
-    # print(seen)
-    
-# print(seen)
-# print(area,s,g)
-print("No")
+dfs(s)
 
+print('No')
 
 # BFS
 # 深さ優先探索
