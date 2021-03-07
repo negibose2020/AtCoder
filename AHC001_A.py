@@ -3,46 +3,18 @@
 
 n=int(input())
 ads=[]
-minx=1000
-minxi=-1
-miny=1000
-minyi=-1
-maxx=0
-maxxi=-1
-maxy=0
-maxyi=-1
+h=[0]*10000
+
 for i in range (n):
     x,y,r=map(int,input().split())
     ads.append([x,y,r,i])
-    if x<minx:
-        minx=x
-        minxi=i
-    if y<miny:
-        miny=y
-        minyi=i
-    if x>maxx:
-        maxx=x
-        maxxi=i
-    if y>maxy:
-        maxy=y
-        maxyi=i
+    h[y]+=1
 
-
-area=[]
-
-# sortedads=sorted(ads,key=)
 
 
 for i in range (n):
-    if i==minxi:
-        print(0,ads[i][1],ads[i][0]+1,ads[i][1]+1)
-    elif i==minyi:
-        print(ads[i][0],0,ads[i][0]+1,ads[i][1]+1)
-    elif i==maxxi:
-        print(ads[i][0],ads[i][1],10000,ads[i][1]+1)
-    elif i==maxyi:
-        print(ads[i][0],ads[i][1],ads[i][0]+1,10000)
+    height_i=ads[i][1]
+    if h[height_i]==1:
+        print(0,ads[i][1],10000,ads[i][1]+1)
     else:
         print(ads[i][0],ads[i][1],ads[i][0]+1,ads[i][1]+1)
-
-# print(ads)
