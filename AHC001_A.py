@@ -9,83 +9,180 @@ def Calculate_points(x1,y1,x2,y2,r,n):
     p/=n
     return p
 
-class Advertisement(object):
-    def __init__(self,x,y,r,i):
-        self.x=x
-        self.y=y
-        self.r=r
-        self.dist_left=self.x-0
-        self.dist_right=10000-self.x
-        self.dist_up=self.y-0
-        self.dist_down=10000-self.y
-        self.num_i=i
-    
-    def update_dist_left(self,other):
-        if self.x>other.x:
-            self.dist_left=min(self.dist_left,self.x-other.x)
-    def update_dist_right(self,other):
-        if self.x<other.x:
-            self.distt_right=min(self.dist_right,other.x-self.x)
-    def update_dist_up(self,other):
-        if self.y<other.y:
-            self.dist_up=min(self.dist_up,other.y-self.y)
-    def update_dist_down(self,other):
-        if self.y>other.y:
-            self.dist_down=min(self.dist_down,self.y-other.y)
-    
+
+def div_area(start_x,start_y,end_x,end_y,ads):
+    n=len(ads)
+    height=[0]*10000
+    height_list=[start_y-1]
+    width=[0]*10000
+    width_list=[start_x-1]
+    points_horizontal_stripes=0
+    points_vertical_stripes=0
+    height_cnt=0
+    width_cnt=0
+    dic=dict()
+
+    for ads_i in range (len(ads)):
+        x,y,r,j=ads[ads_i]
+        if x < start_x or x > end_x :
+            continue
+        if y < start_y or y > end_y :
+            continue
+        height[y]+=1
+        height_list.append(y)
+        width[x]+=1
+        width_list.append(x)
+        height_cnt+=1
+        width_cnt+=1
+
+        height_list.sort()
+        width_list.sort()
+
+    for ads_i in range (len(ads)):
+        x,y,r,j=ads[ads_i]
+        if x<start_x or x>end_x :
+            continue
+        if y<start_y or y>end_y:
+            continue
+
+        height_i=y
+        if height[height_i]==1:
+            height_oder=height_list.index(height_i)
+            pre_height_oder=height_oder-1
+            pre_height_num=height_list[pre_height_oder]
+            if height_oder==height_cnt:
+                points_horizontal_stripes+=Calculate_points(start_x,pre_height_num+1,end_x,end_y,r,n)
+            else:
+                points_horizontal_stripes+=Calculate_points(start_x,pre_height_num+1,end_x,y+1,r,n)
+                # print(start_x,pre_height_num+1,end_x,y+1)
+            continue
+
+        else:
+            points_horizontal_stripes+=Calculate_points(x,y,x+1,y+1,r,n)
+            # print(x,y,x+1,y+1)
+            continue
+
+
+    for ads_i in range (len(ads)):
+        x,y,r,j=ads[ads_i]
+        if x<start_y or x>end_x:
+            continue
+        if y<start_y or y>end_y:
+            continue
+        
+        width_i=x
+        if width[width_i]==1:
+            width_oder=width_list.index(width_i)
+            pre_width_oder=width_oder-1
+            pre_width_num=width_list[pre_width_oder]
+            if width_oder==width_cnt:
+                points_vertical_stripes+=Calculate_points(pre_width_num+1,start_y, end_x,end_y,r,n)
+            else:
+                points_vertical_stripes+=Calculate_points(pre_width_num+1,start_y, x+1,end_y,r,n)
+            # print(pre_width_num+1,start_y, x+1,end_y)
+            continue
+        else:
+            points_vertical_stripes+=Calculate_points(x,y,x+1,y+1,r,n)
+            # print(x,y,x+1,y+1)
+            continue
+
+
+    if points_horizontal_stripes>points_vertical_stripes:
+        for ads_i in range (len(ads)):
+            x,y,r,j=ads[ads_i]
+            if x<start_x or x>end_x :
+                continue
+            if y<start_y or y>end_y:
+                continue
+
+            height_i=y
+            if height[height_i]==1:
+                height_oder=height_list.index(height_i)
+                pre_height_oder=height_oder-1
+                pre_height_num=height_list[pre_height_oder]
+                if height_oder==height_cnt:
+                    dic[j]=[start_x,pre_height_num+1,end_x,end_y]
+                # points_horizontal_stripes+=Calculate_points(start_x,pre_height_num+1,end_x,y+1,r,n)
+                else:
+                    dic[j]=[start_x,pre_height_num+1,end_x,y+1]
+                # print(start_x,pre_height_num+1,end_x,y+1)
+                continue
+            else:
+                # points_horizontal_stripes+=Calculate_points(x,y,x+1,y+1,r,n)
+                dic[j]=[x,y,x+1,y+1]
+                # print(x,y,x+1,y+1)
+                continue
+    else:
+        for ads_i in range (len(ads)):
+            x,y,r,j=ads[ads_i]
+            if x<start_x or x>end_x:
+                continue
+            if y<start_y or y>end_y:
+                continue
+            
+            width_i=x
+            desired_area=r
+            if width[width_i]==1:
+                width_oder=width_list.index(width_i)
+                pre_width_oder=width_oder-1
+                pre_width_num=width_list[pre_width_oder]
+                if width_oder==width_cnt:
+                    dic[j]=[pre_width_num+1,start_y, end_x,end_y]    
+                # points_vertical_stripes+=Calculate_points(pre_width_num+1,start_y, x+1,end_y,r,n)
+                else:
+                    dic[j]=[pre_width_num+1,start_y, x+1,end_y]
+                # print(pre_width_num+1,start_y, x+1,end_y)
+                continue
+
+            else:
+                # points_vertical_stripes+=Calculate_points(x,y,x+1,y+1,r,n)
+                dic[j]=[x,y,x+1,y+1]
+                # print(x,y,x+1,y+1)
+                continue
+    return dic
+
+
 
 
 
 
 
 n=int(input())
-ads=[]
-AdObjs=[]
 
+ads=[]
 
 for i in range (n):
     x,y,r=map(int,input().split())
     ads.append([x,y,r,i])
-    obj=Advertisement(x,y,r,i)
-    AdObjs.append(obj)
+
+ans=[]
+
+a=div_area(0,0,10000//2,10000//2,ads)
+b=div_area(10000//2,0,10000,10000//2,ads)
+c=div_area(0,10000//2,10000,10000,ads)
+a.update(b)
+a.update(c)
+#  =>Score: 597947519
+
+# a=div_area(0,0,10000//2,10000//2,ads)
+# b=div_area(10000//2,0,10000,10000//2,ads)
+# c=div_area(0,10000//2,10000//2,10000,ads)
+# d=div_area(10000//2,10000//2,10000,10000,ads)
+# a.update(b)
+# a.update(c)
+# a.update(d)
+#  =>Score: 561258921
+
+# a=div_area(0,0,3000,5000,ads)
+# b=div_area(3001,0,10000,5000,ads)
+# c=div_area(0,5001,10000,10000,ads)
+# a.update(b)
+# a.update(c)
+#  =>Score: 575013904
 
 
-x0y0=Advertisement(0,0,0,n+100)
-x10000y0=Advertisement(10000,0,0,n+101)
-x0y10000=Advertisement(0,10000,0,n+102)
-x10000y10000=Advertisement(10000,10000,0,n+103)
-
-AdObjs.append(x0y0)
-AdObjs.append(x10000y0)
-AdObjs.append(x0y10000)
-AdObjs.append(x10000y10000)
-
-for i in range (n):
-    a=AdObjs[i]
-    for j in range (n+4):
-        if i==j:
-            pass
-        b=AdObjs[j]
-        if a.x-b.x>0 and a.y-b.y>0:
-            Advertisement.update_dist_up(b,a)
-            Advertisement.update_dist_left(b,a)
-        if a.x-b.x>0 and a.y-b.y<=0:
-            Advertisement.update_dist_left(b,a)
-            Advertisement.update_dist_down(b,a)
-        if a.x-b.x<=0 and a.y-
-        Advertisement.update_dist_down(a,b)
-        # Advertisement.update_dist_down(b,a)
-        Advertisement.update_dist_left(a,b)
-        # Advertisement.update_dist_left(b,a)
-        Advertisement.update_dist_right(a,b)
-        # Advertisement.update_dist_right(b,a)
-        Advertisement.update_dist_up(a,b)
-        # Advertisement.update_dist_up(b,a)
+# a=div_area(0,0,10000,10000,ads)
+#  =>Score: 570530257
 
 for i in range (n):
-    pr=AdObjs[i]
-    x1=pr.x-pr.dist_left
-    y1=pr.y-pr.dist_up
-    x2=pr.x+pr.dist_right
-    y2=pr.y+pr.dist_down
-    print(x1,y1,x2,y2)
+    print(*a[i])
