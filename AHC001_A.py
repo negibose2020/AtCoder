@@ -17,16 +17,53 @@ def CanIGetPoint(x,y,x1,y1,x2,y2):
     if y>y2:return False
     return True
 
+def HalfSize(x,y,x1,y1,x2,y2,r,n):
+    # 半分にカットしても得点が得られるようなx1,y1,x2,y2を返す
+    mxp=Calculate_points(x1,y1,x2,y2,r,n)
+    w=x2+1-x1
+    h=y2+1-y1
+    area=w*h
+    x1,y1,x2,y2=map(int,[x1,y1,x2,y2])
+    for _ in range (10):
+        if area+1<=2*r:
+            break
+        ph=mxp
+        pw=mxp
+        adjst_h=y2-h//2
+        adjst_w=x2-w//2
+        if CanIGetPoint(x,y,x1,adjst_h,x2,y2):
+            ph=Calculate_points(x1,adjst_h,x2,y2,r,n)
+        if CanIGetPoint(x,y,adjst_w,y1,x2,y2):
+            pw=Calculate_points(adjst_w,y1,x2,y2,r,n)
+        if ph>pw:
+            if ph>mxp:
+                mxp=ph
+                mxcod=[x1,adjst_h,x2,y2]
+                x1,y1,x2,y2=map(int,mxcod)
+        if pw>ph:
+            if pw>mxp:
+                mxp=pw
+                mxcod=[adjst_w,y1,x2,y2]
+                x1,y1,x2,y2=map(int,mxcod)
+        w=x2+1-x1
+        h=y2+1-y1
+        area=w*h
+
+    return [x1,y1,x2,y2]
+
+
 def TryOutPatturns(x,y,x1,y1,x2,y2,r,n):
     # 複数パターンを試して、一番高い得点のx1,y1,x2,y2を返す
     mxp=Calculate_points(x1,y1,x2,y2,r,n)
     mxcod=[x1,y1,x2,y2]
-    w=x2+1-x1
-    h=y2+1-y1
-    area=w*h
+    halfsizecod=HalfSize(x,y,x1,y1,x2,y2,r,n)
+    halfsizep=Calculate_points(halfsizecod[0],halfsizecod[1],halfsizecod[2],halfsizecod[3],r,n)
+    if halfsizep>mxp:
+        mxp=halfsizep
+        mxcod=halfsizecod
 
-    for i in range (50):
-        for j in range (50):
+    for i in range (5):
+        for j in range (5):
             trying_x1=x1+i
             trying_y1=y1+j
             if CanIGetPoint(x,y,trying_x1,trying_y1,x2,y2):
@@ -86,21 +123,6 @@ def div_area(start_x,start_y,end_x,end_y,ads):
 
             if area > r:
                 arr=TryOutPatturns(x,y,x1,y1,x2,y2,r,n)
-
-                # if Calculate_points(x1,y1+25,x2,y2,r,n):
-                #     y1+=25
-                # elif Calculate_points(x1,y1+20,x2,y2,r,n):
-                #     y1+=20
-                # elif Calculate_points(x1,y1+15,x2,y2,r,n):
-                #     y1+=15
-                # elif Calculate_points(x1,y1+10,x2,y2,r,n):
-                #     y1+=10
-                # elif Calculate_points(x1,y1+5,x2,y2,r,n):
-                #     y1+=5
-                # elif Calculate_points(x1,y1+3,x2,y2,r,n):
-                #     y1+=3
-                # else:
-                #     pass
                 x1=arr[0]
                 y1=arr[1]
                 x2=arr[2]
@@ -143,21 +165,6 @@ def div_area(start_x,start_y,end_x,end_y,ads):
 
             if area > r:
                 arr=TryOutPatturns(x,y,x1,y1,x2,y2,r,n)
-
-                # if Calculate_points(x1+25,y1,x2,y2,r,n):
-                #     x1+=25
-                # elif Calculate_points(x1+20,y1,x2,y2,r,n):
-                #     x1+=20
-                # elif Calculate_points(x1+15,y1,x2,y2,r,n):
-                #     x1+=15
-                # elif Calculate_points(x1+10,y1,x2,y2,r,n):
-                #     x1+=10
-                # elif Calculate_points(x1+5,y1,x2,y2,r,n):
-                #     x1+=5
-                # elif Calculate_points(x1+3,y1,x2,y2,r,n):
-                #     x1+=3
-                # else:
-                #     pass
                 x1=arr[0]
                 y1=arr[1]
                 x2=arr[2]
@@ -201,21 +208,6 @@ def div_area(start_x,start_y,end_x,end_y,ads):
 
                 if area >r:
                     arr=TryOutPatturns(x,y,x1,y1,x2,y2,r,n)
-
-                    # if Calculate_points(x1,y1+25,x2,y2,r,n):
-                    #     y1+=25
-                    # elif Calculate_points(x1,y1+20,x2,y2,r,n):
-                    #     y1+=20
-                    # elif Calculate_points(x1,y1+15,x2,y2,r,n):
-                    #     y1+=15
-                    # elif Calculate_points(x1,y1+10,x2,y2,r,n):
-                    #     y1+=10
-                    # elif Calculate_points(x1,y1+5,x2,y2,r,n):
-                    #     y1+=5
-                    # elif Calculate_points(x1,y1+3,x2,y2,r,n):
-                    #     y1+=3
-                    # else:
-                    #     pass
                     x1=arr[0]
                     y1=arr[1]
                     x2=arr[2]
@@ -256,26 +248,12 @@ def div_area(start_x,start_y,end_x,end_y,ads):
 
                 if area > r:
                     arr=TryOutPatturns(x,y,x1,y1,x2,y2,r,n)
-                    # if Calculate_points(x1+25,y1,x2,y2,r,n):
-                    #     x1+=25
-                    # elif Calculate_points(x1+20,y1,x2,y2,r,n):
-                    #     x1+=20
-                    # elif Calculate_points(x1+15,y1,x2,y2,r,n):
-                    #     x1+=15
-                    # elif Calculate_points(x1+10,y1,x2,y2,r,n):
-                    #     x1+=10
-                    # elif Calculate_points(x1+5,y1,x2,y2,r,n):
-                    #     x1+=5
-                    # elif Calculate_points(x1+3,y1,x2,y2,r,n):
-                    #     x1+=3
-                    # else:
-                    #     pass
                     x1=arr[0]
                     y1=arr[1]
                     x2=arr[2]
                     y2=arr[3]
 
-                dic[j]=[pre_width_num+1,start_y, x+1,end_y]
+                dic[j]=[x1,y1,x2,y2]
                 # print(pre_width_num+1,start_y, x+1,end_y)
                 continue
                 '''
