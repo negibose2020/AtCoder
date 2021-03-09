@@ -17,20 +17,22 @@ def CanIGetPoint(x,y,x1,y1,x2,y2):
     if y>y2:return False
     return True
 
-def HalfSize(x,y,x1,y1,x2,y2,r,n):
-    # 半分にカットしても得点が得られるようなx1,y1,x2,y2を返す
+def ReduceSize(x,y,x1,y1,x2,y2,r,n):
+    # サイズをカットしても得点が得られるようなx1,y1,x2,y2を返す
     mxp=Calculate_points(x1,y1,x2,y2,r,n)
     w=x2+1-x1
     h=y2+1-y1
     area=w*h
     x1,y1,x2,y2=map(int,[x1,y1,x2,y2])
-    for _ in range (10):
-        if area+1<=2*r:
+    rdc=area//r
+
+    for _ in range (5):
+        if area+1<=rdc*r:
             break
         ph=mxp
         pw=mxp
-        adjst_h=y2-h//2
-        adjst_w=x2-w//2
+        adjst_h=y2-h//rdc
+        adjst_w=x2-w//rdc
         if CanIGetPoint(x,y,x1,adjst_h,x2,y2):
             ph=Calculate_points(x1,adjst_h,x2,y2,r,n)
         if CanIGetPoint(x,y,adjst_w,y1,x2,y2):
@@ -48,6 +50,7 @@ def HalfSize(x,y,x1,y1,x2,y2,r,n):
         w=x2+1-x1
         h=y2+1-y1
         area=w*h
+        rdc=area//r
 
     return [x1,y1,x2,y2]
 
@@ -56,14 +59,14 @@ def TryOutPatturns(x,y,x1,y1,x2,y2,r,n):
     # 複数パターンを試して、一番高い得点のx1,y1,x2,y2を返す
     mxp=Calculate_points(x1,y1,x2,y2,r,n)
     mxcod=[x1,y1,x2,y2]
-    halfsizecod=HalfSize(x,y,x1,y1,x2,y2,r,n)
-    halfsizep=Calculate_points(halfsizecod[0],halfsizecod[1],halfsizecod[2],halfsizecod[3],r,n)
-    if halfsizep>mxp:
-        mxp=halfsizep
-        mxcod=halfsizecod
+    reducesizedcod=ReduceSize(x,y,x1,y1,x2,y2,r,n)
+    reducesizedp=Calculate_points(reducesizedcod[0],reducesizedcod[1],reducesizedcod[2],reducesizedcod[3],r,n)
+    if reducesizedp>mxp:
+        mxp=reducesizedp
+        mxcod=reducesizedcod
 
-    for i in range (5):
-        for j in range (5):
+    for i in range (3):
+        for j in range (3):
             trying_x1=x1+i
             trying_y1=y1+j
             if CanIGetPoint(x,y,trying_x1,trying_y1,x2,y2):
@@ -82,8 +85,8 @@ def div_area(start_x,start_y,end_x,end_y,ads):
     width_list=[start_x-1]
     points_horizontal_stripes=0
     points_vertical_stripes=0
-    # height_cnt=0
-    # width_cnt=0
+    height_cnt=0
+    width_cnt=0
     dic=dict()
     
 
@@ -97,8 +100,8 @@ def div_area(start_x,start_y,end_x,end_y,ads):
         height_list.append(y)
         width[x]+=1
         width_list.append(x)
-        # height_cnt+=1
-        # width_cnt+=1
+        height_cnt+=1
+        width_cnt+=1
 
         height_list.sort()
         width_list.sort()
@@ -119,6 +122,9 @@ def div_area(start_x,start_y,end_x,end_y,ads):
             y1=pre_height_num+1
             x2=end_x
             y2=y+1
+            if height_oder==height_cnt:
+                y2=end_y
+
             area=(x2-x1)*(y2-y1)
 
             if area > r:
@@ -130,15 +136,6 @@ def div_area(start_x,start_y,end_x,end_y,ads):
             points_horizontal_stripes+=Calculate_points(x1,y1,x2,y2,r,n)
             # print(start_x,pre_height_num+1,end_x,y+1)
             continue
-            '''
-            最後だったらareaを拡大しようとしたけど逆にスコア下がったのでお蔵入り
-            if height_oder==height_cnt:
-                points_horizontal_stripes+=Calculate_points(start_x,pre_height_num+1,end_x,end_y,r,n)
-            else:
-                points_horizontal_stripes+=Calculate_points(start_x,pre_height_num+1,end_x,y+1,r,n)
-                # print(start_x,pre_height_num+1,end_x,y+1)
-            '''
-
         else:
             points_horizontal_stripes+=Calculate_points(x,y,x+1,y+1,r,n)
             # print(x,y,x+1,y+1)
@@ -161,6 +158,8 @@ def div_area(start_x,start_y,end_x,end_y,ads):
             y1=start_y
             x2=x+1
             y2=end_y
+            if width_oder==width_cnt:
+                x2=end_x
             area=(x2-x1)*(y2-y1)
 
             if area > r:
@@ -173,14 +172,7 @@ def div_area(start_x,start_y,end_x,end_y,ads):
             points_vertical_stripes+=Calculate_points(x1,y1, x2,y2,r,n)
             # print(pre_width_num+1,start_y, x+1,end_y)
             continue
-            '''
-            最後だったらareaを拡大しようとしたけど逆にスコア下がったのでお蔵入り
-            if width_oder==width_cnt:
-                points_vertical_stripes+=Calculate_points(pre_width_num+1,start_y, end_x,end_y,r,n)
-            else:
-                points_vertical_stripes+=Calculate_points(pre_width_num+1,start_y, x+1,end_y,r,n)
-                # print(pre_width_num+1,start_y, x+1,end_y)
-            '''
+
         else:
             points_vertical_stripes+=Calculate_points(x,y,x+1,y+1,r,n)
             # print(x,y,x+1,y+1)
@@ -268,6 +260,7 @@ def div_area(start_x,start_y,end_x,end_y,ads):
                 continue
     point=max(points_horizontal_stripes,points_vertical_stripes)
     # print(point*10**9)
+
     return [dic,point*10**9]
 
 
@@ -279,74 +272,27 @@ for i in range (n):
     x,y,r=map(int,input().split())
     ads.append([x,y,r,i])
 
+point4ans=0
+dic4ans=dict()
 
-aa=div_area(0,0,10000//2,10000//2,ads)
-bb=div_area(10000//2,0,10000,10000//2,ads)
-cc=div_area(0,10000//2,10000,10000,ads)
-c1=aa[1]+bb[1]+cc[1]
-aa=aa[0]
-aa.update(bb[0])
-aa.update(cc[0])
-#  =>Score: 606660526
+for fh_i in range(1,20):
+    for fh_j in range (1,20):
+        mx=fh_i*500
+        my=fh_j*500
+        a1=div_area(0,0,mx,my,ads)
+        a2=div_area(mx+1,0,10000,my,ads)
+        a3=div_area(0,my+1,mx,10000,ads)
+        a4=div_area(mx+1,my+1,10000,10000,ads)
+        p=a1[1]+a2[1]+a3[1]+a4[1]
+        d=a1[0]
+        d.update(a2[0])
+        d.update(a3[0])
+        d.update(a4[0])
+        # print(d)
+        if p>point4ans:
+            point4ans=p
+            dic4ans=dict()
+            dic4ans.update(d)
 
-dd=div_area(0,0,10000//2,10000//2,ads)
-ee=div_area(10000//2,0,10000,10000//2,ads)
-ff=div_area(0,10000//2,10000//2,10000,ads)
-gg=div_area(10000//2,10000//2,10000,10000,ads)
-c2=dd[1]+ee[1]+ff[1]+gg[1]
-dd=dd[0]
-dd.update(ee[0])
-dd.update(ff[0])
-dd.update(gg[0])
-#  =>Score: 569533297
-
-hh=div_area(0,0,3000,5000,ads)
-ii=div_area(3001,0,10000,5000,ads)
-jj=div_area(0,5001,10000,10000,ads)
-c3=hh[1]+ii[1]+jj[1]
-hh=hh[0]
-hh.update(ii[0])
-hh.update(jj[0])
-#  =>Score: 582000792
-
-
-kk=div_area(0,0,10000,10000,ads)
-c4=kk[1]
-kk=kk[0]
-#  =>Score: 590233842
-
-ll=div_area(0,0,10000,3000,ads)
-mm=div_area(0,3000,10000,6000,ads)
-nn=div_area(0,6000,10000,10000,ads)
-c5=ll[1]+mm[1]+nn[1]
-ll=ll[0]
-ll.update(mm[0])
-ll.update(nn[0])
-
-
-oo=div_area(0,0,3000,10000,ads)
-pp=div_area(3000,0,10000,5000,ads)
-qq=div_area(3000,5000,10000,10000,ads)
-c6=oo[1]+pp[1]+qq[1]
-oo=oo[0]
-oo.update(pp[0])
-oo.update(qq[0])
-
-if c1==max(c1,c2,c3,c4,c5,c6):
-    for i in range (n):
-        print(*aa[i])
-elif c2==max(c1,c2,c3,c4,c5,c6):
-    for i in range (n):
-        print(*dd[i])
-elif c3==max(c1,c2,c3,c4,c5,c6):
-    for i in range (n):
-        print(*hh[i])
-elif c4==max(c1,c2,c3,c4,c5,c6):
-    for i in range (n):
-        print(*kk[i])
-elif c5==max(c1,c2,c3,c4,c5,c6):
-    for i in range (n):
-        print(*ll[i])
-else:
-    for i in range(n):
-        print(*oo[i])
+for ans_i in range (n):
+    print(*dic4ans[ans_i])
