@@ -76,6 +76,30 @@ def TryOutPatturns(x,y,x1,y1,x2,y2,r,n):
                     mxcod=[trying_x1,trying_y1,x2,y2]
     return mxcod
 
+def CutExcessPart_horizon(x,y,x1,y1,x2,y2,end_x,end_y,r,n):
+    w=x2+1-x1
+    h=y2+1-y1
+    area=w*h
+    x1,y1,x2,y2=map(int,[x1,y1,x2,y2])
+    movetoleft=(area-r)//h
+    if x+1<=end_x-movetoleft:
+        x2=end_x-movetoleft
+    else:
+        x2=x+1
+    return x2
+
+def CutExcessPart_vertic(x,y,x1,y1,x2,y2,end_x,end_y,r,n):
+    w=x2+1-x1
+    h=y2+1-y1
+    area=w*h
+    x1,y1,x2,y2=map(int,[x1,y1,x2,y2])
+    movetoup=(area-r)//w
+    if y+1<=end_y-movetoup:
+        y2=end_y-movetoup
+    else:
+        y2=y+1
+    return y2
+
 
 def div_area(start_x,start_y,end_x,end_y,ads):
     n=len(ads)
@@ -133,6 +157,11 @@ def div_area(start_x,start_y,end_x,end_y,ads):
                 y1=arr[1]
                 x2=arr[2]
                 y2=arr[3]
+            
+            area=(x2-x1)*(y2-y1)
+            if area >r:
+                x2=CutExcessPart_horizon(x,y,x1,y1,x2,y2,end_x,end_y,r,n)
+
             points_horizontal_stripes+=Calculate_points(x1,y1,x2,y2,r,n)
             # print(start_x,pre_height_num+1,end_x,y+1)
             continue
@@ -160,15 +189,18 @@ def div_area(start_x,start_y,end_x,end_y,ads):
             y2=end_y
             if width_oder==width_cnt:
                 x2=end_x
+            
             area=(x2-x1)*(y2-y1)
-
             if area > r:
                 arr=TryOutPatturns(x,y,x1,y1,x2,y2,r,n)
                 x1=arr[0]
                 y1=arr[1]
                 x2=arr[2]
                 y2=arr[3]
-            
+            area=(x2-x1)*(y2-y1)
+            if area>r:
+                y2=CutExcessPart_vertic(x,y,x1,y1,x2,y2,end_x,end_y,r,n)
+
             points_vertical_stripes+=Calculate_points(x1,y1, x2,y2,r,n)
             # print(pre_width_num+1,start_y, x+1,end_y)
             continue
@@ -205,15 +237,15 @@ def div_area(start_x,start_y,end_x,end_y,ads):
                     x2=arr[2]
                     y2=arr[3]
 
+                area=(x2-x1)*(y2-y1)
+                if area >r:
+                    x2=CutExcessPart_horizon(x,y,x1,y1,x2,y2,end_x,end_y,r,n)
+
+
                 dic[j]=[x1,y1,x2,y2]
                 # print(start_x,pre_height_num+1,end_x,y+1)
                 continue
-                '''
-                if height_oder==height_cnt:
-                    dic[j]=[start_x,pre_height_num+1,end_x,end_y]
-                else:
-                    dic[j]=[start_x,pre_height_num+1,end_x,y+1]
-                '''
+
             else:
                 dic[j]=[x,y,x+1,y+1]
                 # print(x,y,x+1,y+1)
@@ -245,15 +277,14 @@ def div_area(start_x,start_y,end_x,end_y,ads):
                     x2=arr[2]
                     y2=arr[3]
 
+                area=(x2-x1)*(y2-y1)
+                if area>r:
+                    y2=CutExcessPart_vertic(x,y,x1,y1,x2,y2,end_x,end_y,r,n)
+
                 dic[j]=[x1,y1,x2,y2]
                 # print(pre_width_num+1,start_y, x+1,end_y)
                 continue
-                '''
-                if width_oder==width_cnt:
-                    dic[j]=[pre_width_num+1,start_y, end_x,end_y]    
-                else:
-                    dic[j]=[pre_width_num+1,start_y, x+1,end_y]
-                '''
+
             else:
                 dic[j]=[x,y,x+1,y+1]
                 # print(x,y,x+1,y+1)
