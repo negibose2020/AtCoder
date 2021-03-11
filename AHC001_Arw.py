@@ -329,9 +329,24 @@ def decideSizeAdsUnderBoundaryLimits(boundaryLimits, INFO) :
 
 N=int(input())
 INFO=[]
+intersectionPoints=[]
+
 for i in range (N):
     x,y,r=map(int,input().split())
     INFO.append([i,x,y,r])
+    iP_p=[x+int(r**0.5),y+int(r**0.5)]
+    if iP_p[0]>=10000 or iP_p[1]>=10000:
+        pass
+    else:
+        intersectionPoints.append([r,iP_p])
+    iP_n=[x-int(r**0.5),y-int(r**0.5)]
+    if iP_n[0]<=0 or iP_n[1]<=0:
+        pass
+    else:
+        intersectionPoints.append([r,iP_n])
+    sorted_intersectionPoints=sorted(intersectionPoints,reverse=True ,key= lambda x:x[0])
+    intersectionPoints=sorted_intersectionPoints[:]
+
 
 canvas=[0,0,10000,10000]
 nomal=decideSizeAdsUnderBoundaryLimits(canvas,INFO)
@@ -357,6 +372,29 @@ for fh_i in range (1,20):
             dic4ans=dict()
             dic4ans=d
 
+for iP_i in range (len(intersectionPoints)):
+    mx=intersectionPoints[iP_i][1][0]
+    my=intersectionPoints[iP_i][1][1]
+    a1=decideSizeAdsUnderBoundaryLimits([0,0,mx,my],INFO) # 広告スペースを区切ったときの 左上
+    a2=decideSizeAdsUnderBoundaryLimits([ mx+1,0,10000,my],INFO) # 広告スペースを区切ったときの 右上
+    a3=decideSizeAdsUnderBoundaryLimits([ 0,my+1,mx,10000],INFO) # 広告スペースを区切ったときの 左下
+    a4=decideSizeAdsUnderBoundaryLimits([ mx+1,my+1,10000,10000],INFO) # 広告スペースを区切ったときの 右下
+    p=a1[1]+a2[1]+a3[1]+a4[1]
+    d=a1[0]
+    d.update(a2[0])
+    d.update(a3[0])
+    d.update(a4[0])
+    # print(d)
+    if p>score4ans:
+        score4ans=p
+        dic4ans=dict()
+        dic4ans=d
 
 for ans_i in range(N):
     print(*dic4ans[ans_i])
+
+
+
+'''
+23=>198
+'''
