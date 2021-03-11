@@ -371,6 +371,23 @@ def compensation_vertic (compensationData_vertical,INFO,verticalStripesDic,verti
     return [score,dic]
 
 
+def extendToEnd_y(INFO_i, v,end_y):
+    i, x, y, r = map(int, INFO_i)
+    x1, y1, x2, y2 = map(int, v)
+    maximumSize=(x2-x1)*(end_y-y1)
+    if r > maximumSize :
+        y2=end_y
+        v=[x1,y1,x2,y2]
+        return [v,]
+
+    w = x2 - x1
+    h = y2 - y1
+
+    area = calculateArea(v)
+
+
+
+
 
 def decideSizeAdsUnderBoundaryLimits(boundaryLimits, INFO) :
     # boundaryLimits : 広告スペースを区切った際の始点と終点 [start_x,start_y,end_x,end_y]
@@ -427,29 +444,70 @@ def decideSizeAdsUnderBoundaryLimits(boundaryLimits, INFO) :
         v = [x1, y1, x2, y2]
         area = calculateArea(v)
 
-        if r > area and heightOder == heightCnt :
-            y2 = end_y
-            v = [x1, y1, x2, y2]
-        
-        # 上側を削る処理
-        if area > r :
-            y1_before=v[1]
-            v = ReduceSize_horizon(INFO[INFO_i], v, n)
-            area = calculateArea(v)
-            y1_after=v[1]
-            if y1_after != y1_before:
+        if heightOder == heightCnt :
+            if (end_y-y1)*(x2-x1) <= r : #端の最大サイズ
+                y2=end_y
+                v = [x1, y1, x2, y2]
+            
+            elif r < (end_y-y2)*(x2-x1): #y1をy2にして、新しいy2を探すパターン
+                w=x2-x1
+                needheight=r//w
+                if needheight==0:
+                    needheight=1
+                temp_y1=y2
+                temp_y2=y2+needheight
+                if temp_y2>end_y:
+                    temp_y2=end_y
+                v=[x1,temp_y1,x2,temp_y2]
+                area=calculateArea(v)
+
+                if r>area:
+                    edgediff = r - area
+                    h=y2-y1
+                    moveD=edgediff//h
+                    if x1+moveD > x :
+                        x1=x
+                        x2=x2-moveD-x
+                    else:
+                        x1=x1+moveD
+                    v=[x1,y1,x2,y2]
                 preIndex_INFO_i=heightDic[baseOfBorderingOnTop]
-                compensationData_horizon.append([preIndex_INFO_i,y1_after])
+                compensationData_horizon.append([preIndex_INFO_i,v[1]])
+            else:
+                w = x2- x1
+                edgediff = r - (end_y-y2) * w
+                if edgediff>0:
+                    moveD_up=edgediff//w
+                    temp_y1=y2-moveD_up
+                    temp_y2=end_y
+                    if temp_y1 <= baseOfBorderingOnTop+1:
+                        y1=y1
+                    else:
+                        y1=temp_y1
+                    y2=temp_y2
+                    v=[x1,y1,x2,y2]
+                preIndex_INFO_i=heightDic[baseOfBorderingOnTop]
+                compensationData_horizon.append([preIndex_INFO_i,v[1]])
+        else:
+            # 上側を削る処理
+            if area > r :
+                y1_before=v[1]
+                v = ReduceSize_horizon(INFO[INFO_i], v, n)
+                area = calculateArea(v)
+                y1_after=v[1]
+                if y1_after != y1_before:
+                    preIndex_INFO_i=heightDic[baseOfBorderingOnTop]
+                    compensationData_horizon.append([preIndex_INFO_i,y1_after])
 
-        # 左側を削る処理
-        if area > r :
-            v = ReduceSize(INFO[INFO_i], v, n)
-            area = calculateArea(v)
+            # 左側を削る処理
+            if area > r :
+                v = ReduceSize(INFO[INFO_i], v, n)
+                area = calculateArea(v)
 
-        # 右側を削る処理
-        if area > r :
-            v = CutExcessPart_horizon(INFO[INFO_i],v,boundaryLimits,n)
-            area =calculateArea(v)
+            # 右側を削る処理
+            if area > r :
+                v = CutExcessPart_horizon(INFO[INFO_i],v,boundaryLimits,n)
+                area =calculateArea(v)
         
         horizontalStripesScore += calculateScore(v,r,n)
         horizontalStripesDic[i]= v
@@ -477,9 +535,13 @@ def decideSizeAdsUnderBoundaryLimits(boundaryLimits, INFO) :
         v = [x1, y1, x2, y2]
         area = calculateArea(v)
 
-        if r > area and widthOder == widthCnt :
-            x2 = end_x
-            v = [x1, y1, x2, y2]
+        if widthOder == widthCnt :
+            if r > (end_x - x1) * (y2-y1):
+                x2 = end_x
+                v = [x1, y1, x2, y2]
+            else:
+                pass
+
 
         # 左側を削る処理
         if area > r :
