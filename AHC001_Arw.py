@@ -12,8 +12,8 @@ def calculateScore(v,r,n):
     False : False
     '''
     x1, y1, x2, y2 = map(int, v)
-    w = x2 + 1 - x1
-    h = y2 + 1 - y1
+    w = x2 - x1
+    h = y2 - y1
     s = w * h
     if s <= 0 : return False
     p = 1 - (1 - min(s, r) / max(s, r)) ** 2
@@ -107,8 +107,8 @@ def calculateArea(v) :
     戻り値は面積の値(int)。
     '''
     x1, y1, x2, y2 = map(int, v)
-    w = x2 + 1 - x1
-    h = y2 + 1 - y1
+    w = x2 - x1
+    h = y2 - y1
     s = w * h
     return s
 
@@ -125,8 +125,8 @@ def ReduceSize(INFO_i, v, n):
     i, x, y, r = map(int, INFO_i)
     x1, y1, x2, y2 = map(int, v)
 
-    w = x2 + 1 - x1
-    h = y2 + 1 - y1
+    w = x2 - x1
+    h = y2 - y1
 
     area = calculateArea(v)
 
@@ -161,8 +161,8 @@ def ReduceSize_horizon(INFO_i, v, n):
     i, x, y, r = map(int, INFO_i)
     x1, y1, x2, y2 = map(int, v)
 
-    w = x2 + 1 - x1
-    h = y2 + 1 - y1
+    w = x2 - x1
+    h = y2 - y1
 
     area = calculateArea(v)
 
@@ -196,8 +196,8 @@ def ReduceSize_vertic(INFO_i, v, n):
     i, x, y, r = map(int, INFO_i)
     x1, y1, x2, y2 = map(int, v)
 
-    w = x2 + 1 - x1
-    h = y2 + 1 - y1
+    w = x2 - x1
+    h = y2 - y1
 
     area = calculateArea(v)
 
@@ -234,8 +234,8 @@ def CutExcessPart_horizon(INFO_i, v, boundaryLimits, n) :
     x1, y1, x2, y2 = map(int, v)
     start_x, start_y, end_x, end_y = map(int, boundaryLimits)
     
-    w = x2 + 1 - x1
-    h = y2 + 1 - y1
+    w = x2 - x1
+    h = y2 - y1
 
     area = calculateArea(v)
 
@@ -274,8 +274,8 @@ def CutExcessPart_vertic(INFO_i, v, boundaryLimits, n) :
     x1, y1, x2, y2 = map(int, v)
     start_x, start_y, end_x, end_y = map(int, boundaryLimits)
     
-    w = x2 + 1 - x1
-    h = y2 + 1 - y1
+    w = x2 - x1
+    h = y2 - y1
 
     area = calculateArea(v)
 
