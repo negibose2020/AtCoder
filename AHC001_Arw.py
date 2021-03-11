@@ -249,7 +249,7 @@ def CutExcessPart_horizon(INFO_i, v, boundaryLimits, n) :
             x2 = temp_x2
         else :
             x2 = x + 1
-        
+
     if fixVal == w and moveDist !=0 :
         temp_y2 = end_y - moveDist
         if y+1 <= temp_y2 :
@@ -369,23 +369,6 @@ def compensation_vertic (compensationData_vertical,INFO,verticalStripesDic,verti
         # print(1,dic[checkIndex])
 
     return [score,dic]
-
-
-def extendToEnd_y(INFO_i, v,end_y):
-    i, x, y, r = map(int, INFO_i)
-    x1, y1, x2, y2 = map(int, v)
-    maximumSize=(x2-x1)*(end_y-y1)
-    if r > maximumSize :
-        y2=end_y
-        v=[x1,y1,x2,y2]
-        return [v,]
-
-    w = x2 - x1
-    h = y2 - y1
-
-    area = calculateArea(v)
-
-
 
 
 
@@ -536,32 +519,71 @@ def decideSizeAdsUnderBoundaryLimits(boundaryLimits, INFO) :
         area = calculateArea(v)
 
         if widthOder == widthCnt :
-            if r > (end_x - x1) * (y2-y1):
-                x2 = end_x
+            if (end_x-x1)*(y2-y1) <= r : #端の最大サイズ
+                x2=end_x
                 v = [x1, y1, x2, y2]
-            else:
-                pass
+            
+            elif r < (end_x-x2)*(y2-y1): #x1をx2にして、新しいx2を探すパターン
+                h=y2-y1
+                needwidth=r//h
+                if needwidth==0:
+                    needwidth=1
+                temp_x1=x2
+                temp_x2=x2+needwidth
+                if temp_x2>end_x:
+                    temp_x2=end_x
+                v=[temp_x1,y1,temp_x2,y2]
+                area=calculateArea(v)
 
-
-        # 左側を削る処理
-        if area > r :
-            x1_before=v[0]
-            v = ReduceSize_vertic(INFO[INFO_i], v, n)
-            area = calculateArea(v)
-            x1_after=v[0]
-            if x1_after != x1_before:
+                if r>area:
+                    edgediff = r - area
+                    w=x2-x1
+                    moveD=edgediff//w
+                    if y1+moveD > y :
+                        y1=y
+                        y2=y2-moveD-y
+                    else:
+                        y1=y1+moveD
+                    v=[x1,y1,x2,y2]
                 preIndex_INFO_i=widthDic[baseOfBorderingOnLeft]
-                compensationData_vertical.append([preIndex_INFO_i,x1_after])
+                compensationData_vertical.append([preIndex_INFO_i,v[0]])
 
-        # 上側を削る処理
-        if area > r :
-            v = ReduceSize(INFO[INFO_i],v,n)
-            area = calculateArea(v)
+            else:
+                h = y2- y1
+                edgediff = r - (end_x-x2) * h
+                if edgediff>0:
+                    moveD_left=edgediff//h
+                    temp_x1=x2-moveD_left
+                    temp_x2=end_x
+                    if temp_x1 <= baseOfBorderingOnLeft +1:
+                        x1=x1
+                    else:
+                        x1=temp_x1
+                    x2=temp_x2
+                    v=[x1,y1,x2,y2]
+                preIndex_INFO_i=widthDic[baseOfBorderingOnLeft]
+                compensationData_vertical.append([preIndex_INFO_i,v[0]])
 
-        # 下側を削る処理
-        if area > r :
-            v = CutExcessPart_vertic(INFO[INFO_i],v,boundaryLimits,n)
-            area = calculateArea(v)
+        else:
+            # 左側を削る処理
+            if area > r :
+                x1_before=v[0]
+                v = ReduceSize_vertic(INFO[INFO_i], v, n)
+                area = calculateArea(v)
+                x1_after=v[0]
+                if x1_after != x1_before:
+                    preIndex_INFO_i=widthDic[baseOfBorderingOnLeft]
+                    compensationData_vertical.append([preIndex_INFO_i,x1_after])
+
+            # 上側を削る処理
+            if area > r :
+                v = ReduceSize(INFO[INFO_i],v,n)
+                area = calculateArea(v)
+
+            # 下側を削る処理
+            if area > r :
+                v = CutExcessPart_vertic(INFO[INFO_i],v,boundaryLimits,n)
+                area = calculateArea(v)
 
         verticalStripesScore += calculateScore(v,r,n)
         verticalStripesDic[i]= v
@@ -652,6 +674,8 @@ for iP_i in range (len(intersectionPoints)):
 #     print(INFO[ans_i])
 #     print(r-calculateArea(dic4ans[ans_i]),r>calculateArea(dic4ans[ans_i]))
 #     print("-------------------")
+
+# print(score4ans)
 
 for ans_i in range(N):
     print(*dic4ans[ans_i])
