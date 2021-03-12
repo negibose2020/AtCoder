@@ -1,6 +1,8 @@
 # AtCoder Heuristic Contest 001
 # A - AtCoder Ad
 
+from itertools import combinations
+
 def calculateScore(v,r,n):
     '''
     # v : 四角形の頂点4つ [x1,y1,x2,y2]
@@ -322,12 +324,17 @@ def compensation_horizon(compensationData_horizon,INFO,horizontalStripesDic,hori
             w = x2-x1
             moveDist=diff//w
             temp_y2=y2+moveDist
-            if temp_y2 > possibleRange:
+            if temp_y2 >= possibleRange:
                 y2=possibleRange
                 # v = [x1,y1,x2,y2]
             else:
                 y2=temp_y2
-            v = [x1,y1,x2,y2]
+            temp_v=[x1,y1,x2,y2]
+
+            if canIGetScore(INFO[checkIndex],temp_v):
+                v = temp_v
+            else:
+                pass
             dic[checkIndex] = v
             score += calculateScore(v,r,len(INFO))
 
@@ -358,11 +365,17 @@ def compensation_vertic (compensationData_vertical,INFO,verticalStripesDic,verti
             h = y2 -y1
             moveDist=diff//h
             temp_x2=x2+moveDist
-            if temp_x2 > possibleRange:
+            if temp_x2 >= possibleRange:
                 x2=possibleRange
             else:
                 x2=temp_x2
-            v = [x1,y1,x2,y2]
+            temp_v=[x1,y1,x2,y2]
+
+            if canIGetScore(INFO[checkIndex],temp_v):
+                v=temp_v
+            else:
+                pass
+
             dic[checkIndex] = v
             score += calculateScore(v,r,len(INFO))
 
@@ -416,7 +429,7 @@ def decideSizeAdsUnderBoundaryLimits(boundaryLimits, INFO) :
             horizontalStripesDic[i] = v
             continue
 
-        
+        #OK
         heightOder = heightList.index(y)
         preHeightOder = heightOder -1
         baseOfBorderingOnTop = heightList[preHeightOder]
@@ -428,49 +441,43 @@ def decideSizeAdsUnderBoundaryLimits(boundaryLimits, INFO) :
         area = calculateArea(v)
 
         if heightOder == heightCnt :
-            if (end_y-y1)*(x2-x1) <= r : #端の最大サイズ
-                y2=end_y
-                v = [x1, y1, x2, y2]
-            
-            elif r < (end_y-y2)*(x2-x1): #y1をy2にして、新しいy2を探すパターン
+                        
+            if area<=r:
+                v=[x1,y1,x2,end_y]
+                area=calculateArea(v)
+            if r<area:
                 w=x2-x1
                 needheight=r//w
-                if needheight==0:
-                    needheight=1
-                temp_y1=y2
-                temp_y2=y2+needheight
-                if temp_y2>end_y:
-                    temp_y2=end_y
-                v=[x1,temp_y1,x2,temp_y2]
-                area=calculateArea(v)
 
-                if r>area:
-                    edgediff = r - area
-                    h=y2-y1
-                    moveD=edgediff//h
-                    if x1+moveD > x :
-                        x1=x
-                        x2=x2-moveD-x
+                if needheight==0:
+                    needheight+=1
+                if needheight>=(end_y-y):
+                    temp_y1=end_y-needheight
+                    if temp_y1<baseOfBorderingOnTop+1:
+                        v=[x1,baseOfBorderingOnTop+1,end_x,end_y]
                     else:
-                        x1=x1+moveD
-                    v=[x1,y1,x2,y2]
-                preIndex_INFO_i=heightDic[baseOfBorderingOnTop]
-                compensationData_horizon.append([preIndex_INFO_i,v[1]])
-            else:
-                w = x2- x1
-                edgediff = r - (end_y-y2) * w
-                if edgediff>0:
-                    moveD_up=edgediff//w
-                    temp_y1=y2-moveD_up
-                    temp_y2=end_y
-                    if temp_y1 <= baseOfBorderingOnTop+1:
-                        y1=y1
-                    else:
-                        y1=temp_y1
-                    y2=temp_y2
-                    v=[x1,y1,x2,y2]
-                preIndex_INFO_i=heightDic[baseOfBorderingOnTop]
-                compensationData_horizon.append([preIndex_INFO_i,v[1]])
+                        v=[x1,temp_y1,x2,end_y]
+                        preIndex_INFO_i=heightDic[baseOfBorderingOnTop]
+                        compensationData_horizon.append([preIndex_INFO_i,v[1]])
+                else:
+                    v=[x1,y,x2,y+needheight]
+                    preIndex_INFO_i=heightDic[baseOfBorderingOnTop]
+                    compensationData_horizon.append([preIndex_INFO_i,v[1]])
+
+                    area=calculateArea(v)
+                    if area >r:
+                        diff= area-r
+                        moveD=diff//(y2-y1)
+                        if moveD==(x2-x1):
+                            moveD=1
+                        temp_x1=x1+moveD
+                        if temp_x1<x:
+                            x1=x
+                            x2=x2-moveD+x
+                        else:
+                            x1=temp_x1
+                        v=[x1,y1,x2,y2]
+
         else:
             # 上側を削る処理
             if area > r :
@@ -491,8 +498,17 @@ def decideSizeAdsUnderBoundaryLimits(boundaryLimits, INFO) :
             if area > r :
                 v = CutExcessPart_horizon(INFO[INFO_i],v,boundaryLimits,n)
                 area =calculateArea(v)
+        if canIGetScore(INFO[INFO_i],v):
+            # if i==42 and heightCnt==heightOder and calculateArea(v)<r:print(7,v)
+
+            horizontalStripesScore += calculateScore(v,r,n)
+        else:
+            x1 = start_x
+            y1 = baseOfBorderingOnTop + 1
+            x2 = end_x
+            y2 = y+1
+            v = [x1, y1, x2, y2]
         
-        horizontalStripesScore += calculateScore(v,r,n)
         horizontalStripesDic[i]= v
     
 
@@ -519,50 +535,42 @@ def decideSizeAdsUnderBoundaryLimits(boundaryLimits, INFO) :
         area = calculateArea(v)
 
         if widthOder == widthCnt :
-            if (end_x-x1)*(y2-y1) <= r : #端の最大サイズ
-                x2=end_x
-                v = [x1, y1, x2, y2]
-            
-            elif r < (end_x-x2)*(y2-y1): #x1をx2にして、新しいx2を探すパターン
+
+            if area<=r:
+                v=[x1,y1,end_x,y2]
+                area=calculateArea(v)
+            if r<area:
                 h=y2-y1
                 needwidth=r//h
+
                 if needwidth==0:
-                    needwidth=1
-                temp_x1=x2
-                temp_x2=x2+needwidth
-                if temp_x2>end_x:
-                    temp_x2=end_x
-                v=[temp_x1,y1,temp_x2,y2]
-                area=calculateArea(v)
-
-                if r>area:
-                    edgediff = r - area
-                    w=x2-x1
-                    moveD=edgediff//w
-                    if y1+moveD > y :
-                        y1=y
-                        y2=y2-moveD-y
+                    needwidth+=1
+                if needwidth>=(end_x-x):
+                    temp_x1=end_x-needwidth
+                    if temp_x1<baseOfBorderingOnLeft+1:
+                        v=[baseOfBorderingOnLeft+1,y1,end_x,end_y]
                     else:
-                        y1=y1+moveD
-                    v=[x1,y1,x2,y2]
-                preIndex_INFO_i=widthDic[baseOfBorderingOnLeft]
-                compensationData_vertical.append([preIndex_INFO_i,v[0]])
+                        v=[temp_x1,y1,end_x,y2]
+                        preIndex_INFO_i=widthDic[baseOfBorderingOnLeft]
+                        compensationData_vertical.append([preIndex_INFO_i,v[0]])
+                else:
+                    v=[x,y1,x+needwidth,y2]
+                    preIndex_INFO_i=widthDic[baseOfBorderingOnLeft]
+                    compensationData_vertical.append([preIndex_INFO_i,v[0]])
 
-            else:
-                h = y2- y1
-                edgediff = r - (end_x-x2) * h
-                if edgediff>0:
-                    moveD_left=edgediff//h
-                    temp_x1=x2-moveD_left
-                    temp_x2=end_x
-                    if temp_x1 <= baseOfBorderingOnLeft +1:
-                        x1=x1
-                    else:
-                        x1=temp_x1
-                    x2=temp_x2
-                    v=[x1,y1,x2,y2]
-                preIndex_INFO_i=widthDic[baseOfBorderingOnLeft]
-                compensationData_vertical.append([preIndex_INFO_i,v[0]])
+                    area=calculateArea(v)
+                    if area >r :
+                        diff = area -r
+                        moveD=diff//(y2-y1)
+                        if moveD==(y2-y1):
+                            moveD=1
+                        temp_y1=y1+moveD
+                        if temp_y1<y:
+                            y1=y
+                            y2=y2-moveD+y
+                        else:
+                            y1=temp_y1
+                        v=[x1,y1,x2,y2]
 
         else:
             # 左側を削る処理
@@ -584,8 +592,15 @@ def decideSizeAdsUnderBoundaryLimits(boundaryLimits, INFO) :
             if area > r :
                 v = CutExcessPart_vertic(INFO[INFO_i],v,boundaryLimits,n)
                 area = calculateArea(v)
-
-        verticalStripesScore += calculateScore(v,r,n)
+            
+        if canIGetScore(INFO[INFO_i],v):
+            verticalStripesScore += calculateScore(v,r,n)
+        else:
+            x1 = baseOfBorderingOnLeft + 1
+            y1 = start_y
+            x2 = x+1
+            y2 = end_y
+            v = [x1, y1, x2, y2]
         verticalStripesDic[i]= v
 
     horizontalStripes_after=compensation_horizon(compensationData_horizon,INFO,horizontalStripesDic,horizontalStripesScore)
@@ -608,11 +623,13 @@ def decideSizeAdsUnderBoundaryLimits(boundaryLimits, INFO) :
 N=int(input())
 INFO=[]
 intersectionPoints=[]
+twoPoints=[]
 
 for i in range (N):
     x,y,r=map(int,input().split())
     INFO.append([i,x,y,r])
     iP_p=[x+int(r**0.5),y+int(r**0.5)]
+    twoPoints.append([r,[x,y]])
     if iP_p[0]>=10000 or iP_p[1]>=10000:
         pass
     else:
@@ -622,14 +639,16 @@ for i in range (N):
         pass
     else:
         intersectionPoints.append([r,iP_n])
-    sorted_intersectionPoints=sorted(intersectionPoints,reverse=True ,key= lambda x:x[0])
-    intersectionPoints=sorted_intersectionPoints[:]
+
+sorted_intersectionPoints=sorted(intersectionPoints,reverse=True ,key= lambda x:x[0])
+intersectionPoints=sorted_intersectionPoints[:]
 
 
 canvas=[0,0,10000,10000]
 nomal=decideSizeAdsUnderBoundaryLimits(canvas,INFO)
 dic4ans=nomal[0]
 score4ans=nomal[1]
+# print(000,score4ans)
 
 for fh_i in range (1,20):
     for fh_j in range (1,20):
@@ -649,6 +668,7 @@ for fh_i in range (1,20):
             score4ans=p
             dic4ans=dict()
             dic4ans=d
+            # print(111,fh_i,fh_j,score4ans)
 
 for iP_i in range (len(intersectionPoints)):
     mx=intersectionPoints[iP_i][1][0]
@@ -667,6 +687,62 @@ for iP_i in range (len(intersectionPoints)):
         score4ans=p
         dic4ans=dict()
         dic4ans=d
+        # print(222,iP_i,score4ans)
+
+for fivesec_i in range (1,20):
+    for fivesec_j in range (1,20):
+        point_i=[500*fivesec_i,500*fivesec_i]
+        point_j=[10000-180*fivesec_j,10000-150*fivesec_j]
+        left_up=[min(point_i[0],point_j[0]),min(point_i[1],point_j[1])]
+        right_dow=[max(point_i[0],point_j[0]),max(point_i[1],point_j[1])]
+        a0=decideSizeAdsUnderBoundaryLimits([left_up[0]+1,left_up[1]+1,right_dow[0],right_dow[1]],INFO)
+        a1=decideSizeAdsUnderBoundaryLimits([0,0,right_dow[0],left_up[1]],INFO) # 広告スペースを区切ったときの 左上
+        a2=decideSizeAdsUnderBoundaryLimits([ right_dow [0]+1,0,10000,right_dow[1]],INFO) # 広告スペースを区切ったときの 右上
+        a3=decideSizeAdsUnderBoundaryLimits([ 0,left_up[1]+1 ,left_up[0],10000],INFO) # 広告スペースを区切ったときの 左下
+        a4=decideSizeAdsUnderBoundaryLimits([ left_up[0]+1,right_dow[1]+1,10000,10000],INFO) # 広告スペースを区切ったときの 右下
+        p=a0[1]+a1[1]+a2[1]+a3[1]+a4[1]
+        d=a0[0]
+        d.update(a1[0])
+        d.update(a2[0])
+        d.update(a3[0])
+        d.update(a4[0])
+        # print(d)
+        if p>score4ans:
+            score4ans=p
+            dic4ans=dict()
+            dic4ans=d
+            # print(333,fivesec_i,fivesec_j,score4ans)
+
+if N>2:
+    sortedTwoPoints=sorted(twoPoints, reverse=True, key = lambda x : x[0])
+    numOfSelectPoint=min(45,N)
+    sortedTwoPoints = sortedTwoPoints[:numOfSelectPoint]
+    tp=list(combinations(sortedTwoPoints,2))
+    for tp_i in range (len(tp)):
+        p_i=tp[tp_i][0][1]
+        p_j=tp[tp_i][1][1]
+        if abs(p_i[0]-p_j[0])<10 or abs(p_i[0]-p_j[1])<10 or abs(p_i[1]-p_j[1])<10 or abs(p_i[1]==p_j[0])<10 :
+            continue
+        else:
+            left_up=[min(p_i[0],p_j[0]),min(p_i[1],p_j[1])]
+            right_dow=[max(p_i[0],p_j[0]),max(p_i[1],p_j[1])]
+            a0=decideSizeAdsUnderBoundaryLimits([left_up[0]+1,left_up[1]+1,right_dow[0],right_dow[1]],INFO)
+            a1=decideSizeAdsUnderBoundaryLimits([0,0,right_dow[0],left_up[1]],INFO) # 広告スペースを区切ったときの 左上
+            a2=decideSizeAdsUnderBoundaryLimits([ right_dow [0]+1,0,10000,right_dow[1]],INFO) # 広告スペースを区切ったときの 右上
+            a3=decideSizeAdsUnderBoundaryLimits([ 0,left_up[1]+1 ,left_up[0],10000],INFO) # 広告スペースを区切ったときの 左下
+            a4=decideSizeAdsUnderBoundaryLimits([ left_up[0]+1,right_dow[1]+1,10000,10000],INFO) # 広告スペースを区切ったときの 右下
+            p=a0[1]+a1[1]+a2[1]+a3[1]+a4[1]
+            d=a0[0]
+            d.update(a1[0])
+            d.update(a2[0])
+            d.update(a3[0])
+            d.update(a4[0])
+            # print(d)
+            if p>score4ans:
+                score4ans=p
+                dic4ans=dict()
+                dic4ans=d
+                # print(444,p_i,p_j,score4ans)
 
 # for ans_i in range(N):
 #     # print(*dic4ans[ans_i])
@@ -679,6 +755,8 @@ for iP_i in range (len(intersectionPoints)):
 
 for ans_i in range(N):
     print(*dic4ans[ans_i])
+    # if ans_i==42:
+    #     print(dic4ans[ans_i])
 
 
 '''
