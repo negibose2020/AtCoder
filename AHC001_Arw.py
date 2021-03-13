@@ -2,6 +2,7 @@
 # A - AtCoder Ad
 
 from itertools import combinations
+from collections import deque
 
 def calculateScore(v,r,n):
     '''
@@ -303,9 +304,11 @@ def CutExcessPart_vertic(INFO_i, v, boundaryLimits, n) :
 
     return v
 
-def compensation_horizon(compensationData_horizon,INFO,horizontalStripesDic,horizontalStripesScore):
+def compensation_horizon(compensationData_horizon,INFO,horizontalStripesDic,horizontalStripesScore,heightDic, heightList):
     score=horizontalStripesScore
     dic=horizontalStripesDic
+    nextCompensationData_horizon=[]
+    
     for check_i in range (len(compensationData_horizon)):
         checkIndex=compensationData_horizon[check_i][0]
         if checkIndex==-1:
@@ -314,12 +317,40 @@ def compensation_horizon(compensationData_horizon,INFO,horizontalStripesDic,hori
         r=INFO[checkIndex][3]
         v=dic[checkIndex]
         area=calculateArea(v)
+        #追加項目#######
+        y=INFO[checkIndex][2]
+        heightOder=heightList.index(y)
+        preHeightOder = heightOder -1
+        baseOfBorderingOnTop = heightList[preHeightOder]
+
+        ###############
+        x1,y1,x2,y2=map(int,v)
 
         if area > r :
-            continue
+            # pass
+            # x1,y1,x2,y2=map(int,v)
+            
+            h=y2-y1
+            temp_y1=y2-1
+            temp_y2=y2-1+h
+            if temp_y2>possibleRange:
+                temp_y2=possibleRange
+                temp_y1=possibleRange-h
+                if temp_y1>y:
+                    temp_y1=y1
+                    temp_y2=y2
+            else:
+                pass
+            v=[x1,temp_y1,x2,temp_y2]
+            preIndex_INFO_i=heightDic[baseOfBorderingOnTop]
+            nextCompensationData_horizon.append([preIndex_INFO_i,v[1]])
+
+            
+            dic[checkIndex]=v
+            # continue
         else:
             score -= calculateScore(v,r,len(INFO))
-            x1,y1,x2,y2=map(int,v)
+            # x1,y1,x2,y2=map(int,v)
             diff= r-area
             w = x2-x1
             moveDist=diff//w
@@ -338,13 +369,54 @@ def compensation_horizon(compensationData_horizon,INFO,horizontalStripesDic,hori
             dic[checkIndex] = v
             score += calculateScore(v,r,len(INFO))
 
+    if len(nextCompensationData_horizon)>0:
+
+        for check_j in range (len(nextCompensationData_horizon)):
+            checkIndex=nextCompensationData_horizon[check_j][0]
+            if checkIndex==-1:
+                continue
+            possibleRange=nextCompensationData_horizon[check_j][1]
+            r=INFO[checkIndex][3]
+            v=dic[checkIndex]
+            area=calculateArea(v)
+            #追加項目#######
+            y=INFO[checkIndex][2]
+            heightOder=heightList.index(y)
+            preHeightOder = heightOder -1
+            baseOfBorderingOnTop = heightList[preHeightOder]
+            ###############
+            if area > r :
+                continue
+            else:
+                score -= calculateScore(v,r,len(INFO))
+                x1,y1,x2,y2=map(int,v)
+                diff= r-area
+                w = x2-x1
+                moveDist=diff//w
+                temp_y2=y2+moveDist
+                if temp_y2 >= possibleRange:
+                    y2=possibleRange
+                    # v = [x1,y1,x2,y2]
+                else:
+                    y2=temp_y2
+                temp_v=[x1,y1,x2,y2]
+
+                if canIGetScore(INFO[checkIndex],temp_v):
+                    v = temp_v
+                else:
+                    pass
+                dic[checkIndex] = v
+                score += calculateScore(v,r,len(INFO))
+
     return [score,dic]
 
 
 
-def compensation_vertic (compensationData_vertical,INFO,verticalStripesDic,verticalStripesScore):
+def compensation_vertic (compensationData_vertical,INFO,verticalStripesDic,verticalStripesScore,widthDic,widthList):
     score=verticalStripesScore
     dic=verticalStripesDic
+    nextCompensationData_vertic=[]
+
     for check_i in range (len(compensationData_vertical)):
         checkIndex=compensationData_vertical[check_i][0]
         if checkIndex==-1:
@@ -353,14 +425,35 @@ def compensation_vertic (compensationData_vertical,INFO,verticalStripesDic,verti
         r=INFO[checkIndex][3]
         v=dic[checkIndex]
         area=calculateArea(v)
+        x=INFO[checkIndex][1]
+        widthOder=widthList.index(x)
+        preWidthOder= widthOder -1
+        baseOfBorderingOnLeft=widthList[preWidthOder]
 
         # print(0,dic[checkIndex],possibleRange)
+        x1,y1,x2,y2=map(int,v)
         
         if area > r :
-            continue
+            w=x2-x1
+            temp_x1=x2-1
+            temp_x2=x2-1+w
+            if temp_x2>possibleRange:
+                temp_x2=possibleRange
+                temp_x1=possibleRange-w
+                # if temp_x1>x:
+                #     temp_x1=x1
+                #     temp_x2=x2
+            else:
+                pass
+            v=[temp_x1,y1,temp_x2,y2]
+            preIndex_INFO_i=widthDic[baseOfBorderingOnLeft]
+            nextCompensationData_vertic.append([preIndex_INFO_i,v[0]])
+
+            dic[checkIndex]=v
+
+            # continue
         else:
             score -= calculateScore(v,r,len(INFO))
-            x1,y1,x2,y2=map(int,v)
             diff= r- area
             h = y2 -y1
             moveDist=diff//h
@@ -380,6 +473,45 @@ def compensation_vertic (compensationData_vertical,INFO,verticalStripesDic,verti
             score += calculateScore(v,r,len(INFO))
 
         # print(1,dic[checkIndex])
+
+    if len(nextCompensationData_vertic)>0:
+        for check_j in range (len(nextCompensationData_vertic)):
+            checkIndex=nextCompensationData_vertic[check_j][0]
+            if checkIndex==-1:
+                continue
+            possibleRange=nextCompensationData_vertic[check_j][1]
+            r=INFO[checkIndex][3]
+            v=dic[checkIndex]
+            area=calculateArea(v)
+            x=INFO[checkIndex][1]
+            widthOder=widthList.index(x)
+            preWidthOder= widthOder -1
+            baseOfBorderingOnLeft=widthList[preWidthOder]
+            
+
+            # print(0,dic[checkIndex],possibleRange)
+            x1,y1,x2,y2=map(int,v)
+            if area > r :
+                continue
+            else:
+                score -= calculateScore(v,r,len(INFO))
+                diff= r- area
+                h = y2 -y1
+                moveDist=diff//h
+                temp_x2=x2+moveDist
+                if temp_x2 >= possibleRange:
+                    x2=possibleRange
+                else:
+                    x2=temp_x2
+                temp_v=[x1,y1,x2,y2]
+
+                if canIGetScore(INFO[checkIndex],temp_v):
+                    v=temp_v
+                else:
+                    pass
+
+                dic[checkIndex] = v
+                score += calculateScore(v,r,len(INFO))
 
     return [score,dic]
 
@@ -603,10 +735,11 @@ def decideSizeAdsUnderBoundaryLimits(boundaryLimits, INFO) :
             v = [x1, y1, x2, y2]
         verticalStripesDic[i]= v
 
-    horizontalStripes_after=compensation_horizon(compensationData_horizon,INFO,horizontalStripesDic,horizontalStripesScore)
+
+    horizontalStripes_after=compensation_horizon(compensationData_horizon,INFO,horizontalStripesDic,horizontalStripesScore,heightDic, heightList)
     horizontalStripesScore=horizontalStripes_after[0]
     horizontalStripesDic=horizontalStripes_after[1]
-    verticalStripes_after=compensation_vertic(compensationData_vertical,INFO,verticalStripesDic, verticalStripesScore)
+    verticalStripes_after=compensation_vertic(compensationData_vertical,INFO,verticalStripesDic, verticalStripesScore,widthDic,widthList)
     verticalStripesScore=verticalStripes_after[0]
     verticalStripesDic=verticalStripes_after[1]
 
@@ -743,6 +876,35 @@ if N>2:
                 dic4ans=dict()
                 dic4ans=d
                 # print(444,p_i,p_j,score4ans)
+if N>2:
+    sortedTwoPoints=sorted(twoPoints, key = lambda x : x[0])
+    numOfSelectPoint=min(45,N)
+    sortedTwoPoints = sortedTwoPoints[:numOfSelectPoint]
+    tp=list(combinations(sortedTwoPoints,2))
+    for tp_i in range (len(tp)):
+        p_i=tp[tp_i][0][1]
+        p_j=tp[tp_i][1][1]
+        if abs(p_i[0]-p_j[0])<10 or abs(p_i[0]-p_j[1])<10 or abs(p_i[1]-p_j[1])<10 or abs(p_i[1]==p_j[0])<10 :
+            continue
+        else:
+            left_up=[min(p_i[0],p_j[0]),min(p_i[1],p_j[1])]
+            right_dow=[max(p_i[0],p_j[0]),max(p_i[1],p_j[1])]
+            a0=decideSizeAdsUnderBoundaryLimits([left_up[0]+1,left_up[1]+1,right_dow[0],right_dow[1]],INFO)
+            a1=decideSizeAdsUnderBoundaryLimits([0,0,right_dow[0],left_up[1]],INFO) # 広告スペースを区切ったときの 左上
+            a2=decideSizeAdsUnderBoundaryLimits([ right_dow [0]+1,0,10000,right_dow[1]],INFO) # 広告スペースを区切ったときの 右上
+            a3=decideSizeAdsUnderBoundaryLimits([ 0,left_up[1]+1 ,left_up[0],10000],INFO) # 広告スペースを区切ったときの 左下
+            a4=decideSizeAdsUnderBoundaryLimits([ left_up[0]+1,right_dow[1]+1,10000,10000],INFO) # 広告スペースを区切ったときの 右下
+            p=a0[1]+a1[1]+a2[1]+a3[1]+a4[1]
+            d=a0[0]
+            d.update(a1[0])
+            d.update(a2[0])
+            d.update(a3[0])
+            d.update(a4[0])
+            # print(d)
+            if p>score4ans:
+                score4ans=p
+                dic4ans=dict()
+                dic4ans=d
 
 # for ans_i in range(N):
 #     # print(*dic4ans[ans_i])
